@@ -1,3 +1,9 @@
+# Rust
+target/
+**/*.rs.bk
+Cargo.lock
+
+# Node.js / Web
 node_modules/
 .next/
 out/
@@ -11,9 +17,29 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 *.tsbuildinfo
+
+# OS files
 .DS_Store
 Thumbs.db
+Desktop.ini
+
+# IDE / Editor
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.settings/
+.classpath
+*.iml
+
+# Database
 data/
 *.db
 *.db-shm
 *.db-wal
+
+# Downloads / Installers
+rustup-init.exe
+*.exe
