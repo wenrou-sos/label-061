@@ -1,6 +1,6 @@
 use bevy::{
-    prelude::{Component, Resource},
     math::Vec2,
+    prelude::{Component, Resource},
     time::{Timer, TimerMode},
 };
 
@@ -11,8 +11,8 @@ pub const BULLET_SPEED: f32 = 500.0;
 pub const BASE_ASTEROID_SPEED: f32 = 120.0;
 pub const SPEED_INCREMENT: f32 = 30.0;
 pub const SCORE_PER_LEVEL: u32 = 100;
-pub const PLAYER_SIZE: Vec2 = Vec2::new(40.0, 50.0);
-pub const BULLET_SIZE: Vec2 = Vec2::new(4.0, 16.0);
+pub const PLAYER_SIZE: Vec2 = Vec2::new(44.0, 52.0);
+pub const BULLET_SIZE: Vec2 = Vec2::new(6.0, 18.0);
 pub const SHOOT_COOLDOWN: f32 = 0.25;
 pub const HIGH_SCORE_FILE: &str = "high_score.json";
 
@@ -69,6 +69,12 @@ pub struct HighScore {
 pub struct Player;
 
 #[derive(Component)]
+pub struct PlayerWing;
+
+#[derive(Component)]
+pub struct EngineFlame;
+
+#[derive(Component)]
 pub struct Bullet;
 
 #[derive(Component)]
@@ -76,6 +82,12 @@ pub struct Asteroid;
 
 #[derive(Component)]
 pub struct AsteroidSpeed(pub f32);
+
+#[derive(Component)]
+pub struct AsteroidRotation(pub f32);
+
+#[derive(Component)]
+pub struct Star;
 
 #[derive(Component)]
 pub struct ScoreText;

@@ -6,7 +6,7 @@ use bevy::ecs::{
 };
 use serde::{Deserialize, Serialize};
 
-use crate::components::{GameState, HighScore, HIGH_SCORE_FILE};
+use crate::components::{GameState, HIGH_SCORE_FILE, HighScore};
 
 #[derive(Serialize, Deserialize)]
 struct HighScoreData {
@@ -25,10 +25,7 @@ pub fn load_high_score(mut commands: Commands) {
     });
 }
 
-pub fn check_and_save_high_score(
-    game_state: Res<GameState>,
-    mut high_score: ResMut<HighScore>,
-) {
+pub fn check_and_save_high_score(game_state: Res<GameState>, mut high_score: ResMut<HighScore>) {
     if game_state.is_changed() && game_state.game_over {
         high_score.is_new_record = game_state.score > high_score.score;
         if high_score.is_new_record {

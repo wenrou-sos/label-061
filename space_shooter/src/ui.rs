@@ -6,8 +6,8 @@ use bevy::{
         query::{Changed, With},
         system::{Commands, Query, Res, ResMut},
     },
-    prelude::{default, BuildChildren, ChildBuild, BackgroundColor, Button, Interaction, Node, Text, TextColor, TextFont},
-    ui::{FlexDirection, JustifyContent, AlignItems, PositionType, UiRect, Val},
+    prelude::{BackgroundColor, BuildChildren, Button, ChildBuild, DespawnRecursiveExt, Interaction, Node, Text, TextColor, TextFont, default},
+    ui::{AlignItems, FlexDirection, JustifyContent, PositionType, UiRect, Val},
 };
 
 use crate::components::{
@@ -23,6 +23,7 @@ pub fn spawn_score_text(commands: &mut Commands) {
             font_size: 30.0,
             ..default()
         },
+        TextColor(Color::srgb(0.9, 0.95, 1.0)),
         Node {
             position_type: PositionType::Absolute,
             top: Val::Px(10.0),
@@ -33,10 +34,7 @@ pub fn spawn_score_text(commands: &mut Commands) {
     ));
 }
 
-pub fn update_score_text(
-    game_state: Res<GameState>,
-    mut query: Query<&mut Text, With<ScoreText>>,
-) {
+pub fn update_score_text(game_state: Res<GameState>, mut query: Query<&mut Text, With<ScoreText>>) {
     if game_state.is_changed() {
         let Ok(mut text) = query.get_single_mut() else {
             return;
@@ -57,7 +55,7 @@ pub fn check_game_over(
         return;
     }
     for entity in player_query.iter() {
-        commands.entity(entity).despawn();
+        commands.entity(entity).despawn_recursive();
     }
     for entity in score_text_query.iter() {
         commands.entity(entity).despawn();
@@ -81,12 +79,12 @@ pub fn check_game_over(
                 row_gap: Val::Px(15.0),
                 ..default()
             },
-            BackgroundColor(Color::srgba(0.0, 0.0, 0.0, 0.85)),
+            BackgroundColor(Color::srgba(0.0, 0.0, 0.05, 0.85)),
             GameOverUI,
         ))
         .with_children(|parent| {
             parent.spawn((
-                Text::new("Game Over"),
+                Text::new("GAME OVER"),
                 TextFont {
                     font_size: 60.0,
                     ..default()
@@ -96,7 +94,7 @@ pub fn check_game_over(
 
             if is_new_record {
                 parent.spawn((
-                    Text::new("New Record!"),
+                    Text::new("NEW RECORD!"),
                     TextFont {
                         font_size: 28.0,
                         ..default()
@@ -106,7 +104,7 @@ pub fn check_game_over(
             }
 
             parent.spawn((
-                Text::new(format!("Final Score: {}", score_val)),
+                Text::new(format!("Score: {}", score_val)),
                 TextFont {
                     font_size: 36.0,
                     ..default()
@@ -115,7 +113,7 @@ pub fn check_game_over(
             ));
 
             parent.spawn((
-                Text::new(format!("High Score: {}", high_score_val)),
+                Text::new(format!("Best: {}", high_score_val)),
                 TextFont {
                     font_size: 28.0,
                     ..default()
@@ -173,13 +171,15 @@ pub fn check_game_over(
 
 fn reset_game(
     commands: &mut Commands,
-    game_state: &mut ResMut<GameState>,
-    high_score: &mut ResMut<HighScore>,
+    game_state: &mut GameState,
+    high_score: &mut HighScore,
     asteroids: &Query<Entity, With<Asteroid>>,
     bullets: &Query<Entity, With<Bullet>>,
     game_over_ui: &Query<Entity, With<GameOverUI>>,
 ) {
-    **game_state = GameState::default();
+    game_state.score = 0;
+    game_state.speed_level = 1;
+    game_state.game_over = false;
     high_score.is_new_record = false;
     for entity in asteroids.iter() {
         commands.entity(entity).despawn();
@@ -188,7 +188,7 @@ fn reset_game(
         commands.entity(entity).despawn();
     }
     for entity in game_over_ui.iter() {
-        commands.entity(entity).despawn();
+        commands.entity(entity).despawn_recursive();
     }
     spawn_player(commands);
     spawn_score_text(commands);
