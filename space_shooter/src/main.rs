@@ -183,6 +183,9 @@ fn spawn_asteroids(
     mut spawn_timer: ResMut<SpawnTimer>,
     game_state: Res<GameState>,
 ) {
+    if game_state.game_over {
+        return;
+    }
     spawn_timer.timer.tick(time.delta());
     if !spawn_timer.timer.just_finished() {
         return;
@@ -210,7 +213,11 @@ struct AsteroidSpeed(f32);
 fn move_asteroids(
     mut query: Query<(&mut Transform, &AsteroidSpeed), With<Asteroid>>,
     time: Res<Time>,
+    game_state: Res<GameState>,
 ) {
+    if game_state.game_over {
+        return;
+    }
     for (mut transform, speed) in query.iter_mut() {
         transform.translation.y -= speed.0 * time.delta_secs();
     }
